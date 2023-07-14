@@ -2,7 +2,7 @@
 
 ### This project explores the use of Machine Learning in SwiftUI.
 
-This app covers five topics:
+This app covers four topics:
 
 - Entering numbers in a Stepper
 - Selecting dates and times with DatePicker
