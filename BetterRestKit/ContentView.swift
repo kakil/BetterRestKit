@@ -25,49 +25,7 @@ struct ContentView: View {
         return Calendar.current.date(from: components) ?? Date.now
     }
     
-    var body: some View {
-        NavigationView {
-            Form {
-                VStack(alignment: .leading,spacing: 0) {
-                    Text("When do you want to wake up?")
-                        .font(.headline)
-                    
-                    DatePicker("Please enter a time", selection: $wakeUp, displayedComponents: .hourAndMinute)
-                        .labelsHidden()
-                }
-                
-                VStack(alignment: .leading, spacing: 0) {
-                    Text("Desired amount of sleep")
-                        .font(.headline)
-                    
-                    Stepper("\(sleepAmount.formatted()) hours", value: $sleepAmount, in: 4...12, step: 0.25)
-                }
-                
-                VStack(alignment: .leading, spacing: 0) {
-                    Text("Daily coffee intake")
-                        .font(.headline)
-                    
-                    Stepper(coffeeAmount == 1 ? "1 cup" : "\(coffeeAmount) cups", value: $coffeeAmount, in: 1...20)
-                }
-                
-                
-                
-                
-                
-            }
-            .navigationTitle("BetterRestKit")
-            .toolbar {
-                Button("Calculate", action: calculateBedtime)
-            }
-            .alert(alertTitle, isPresented: $showingAlert) {
-                Button("OK") {}
-            } message: {
-                Text(alertMessage)
-            }
-        }
-    }
-    
-    func calculateBedtime() {
+    var bedtime: String {
         do {
             let config = MLModelConfiguration()
             let model = try SleepCalculator(configuration: config)
@@ -80,16 +38,63 @@ struct ContentView: View {
             
             let sleepTime = wakeUp - prediction.actualSleep
             
-            alertTitle = "Your ideal bedtime is..."
-            alertMessage = sleepTime.formatted(date: .omitted, time: .shortened)
+            let formatter = DateFormatter()
+            formatter.timeStyle = .short
+            
+            return formatter.string(from: sleepTime)
+            
+            //alertTitle = "Your ideal bedtime is..."
+            //alertMessage = sleepTime.formatted(date: .omitted, time: .shortened)
             
         } catch {
             // Something went wrong!
-            alertTitle = "Error"
-            alertMessage = "Sorry, there was a problem calculating your bedtime"
+            //alertTitle = "Error"
+            return "Error calculating bedtime"
         }
         
-        showingAlert = true
+        //showingAlert = true
+    }
+    
+    var body: some View {
+        
+        VStack {
+            Text("BetterRestKit")
+                .font(.largeTitle)
+            
+            Form {
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("Desired amount of sleep")
+                        .font(.headline)
+
+                    Stepper("\(sleepAmount.formatted()) hours", value: $sleepAmount, in: 4...12, step: 0.25)
+                }
+
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("Daily coffee intake")
+                        .font(.headline)
+
+                    Stepper(coffeeAmount == 1 ? "1 cup" : "\(coffeeAmount) cups", value: $coffeeAmount, in: 1...20)
+                }
+
+                VStack {
+                    Text("Your ideal bedtime is:")
+                        .font(.headline)
+                    Text(bedtime)
+                        .font(.title)
+                        .fontWeight(.bold)
+                }
+
+
+            }
+            .navigationTitle("BetterRestKit")
+            .alert(alertTitle, isPresented: $showingAlert) {
+                Button("OK") {}
+            } message: {
+                Text(alertMessage)
+            }
+        }
+        
+        
     }
     
 }
