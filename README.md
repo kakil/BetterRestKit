@@ -1,4 +1,4 @@
-#Better Rest - SwiftUI App
+# Better Rest - SwiftUI App
 
 This project explores the use of Machine Learning in SwiftUI.
 
